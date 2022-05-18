@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8s-net-pod
+  template:
+    metadata:
+      labels:
+        app: k8s-net-pod
+    spec:
+      containers:
+      - name: web
+        image: test_project/v1
+        imagePullPolicy: IfNotPresent # k8s默认值为Always，总是从远端拉取镜像，通过设置IfNotPresent或Never来使用本地镜像
+        ports:
+        - containerPort: 80
+        livenessProbe: # 存活探针定义
+          httpGet:
+            path: /host/CheckHealth # healthyCheck路徑
+            port: 80
+      nodeSelector:
+        SpecifyNode: node_test1

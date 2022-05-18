@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-first-tls-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "tlsingress-static-ip"
+spec:
+  tls:
+  - hosts:
+    - k8stlsingress.bingxiang1027test.com
+    secretName: testsecret-tls
+  defaultBackend:
+    service:
+      name: my-first-node-port-service
+      port:
+        number: 80
+  rules:
+  - host: "k8stlsingress.bingxiang1027test.com"
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-first-node-port-service
+            port:
+              number: 80

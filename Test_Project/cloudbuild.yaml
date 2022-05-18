@@ -1,0 +1,34 @@
+﻿steps:
+  # 編譯映像檔
+  - name: 'gcr.io/cloud-builders/docker'
+    id: bx-test-project
+    dir: 'Test_Project/' 
+    env: ['NODE_ENV=$_NODE_ENV']
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile'
+      - '--build-arg'
+      - 'NODE_ENV=$_NODE_ENV'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bx-test-project:ci-$_NODE_ENV-$SHORT_SHA'
+      - '.'
+
+  # 上傳映像檔
+  - name: 'gcr.io/cloud-builders/docker'
+    id: api-push
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/bx-test-project:ci-$_NODE_ENV-$SHORT_SHA'
+
+  # 部署到GKE
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+    - set
+    - image
+    - deployment
+    - my-first-deployment
+    - web=gcr.io/$PROJECT_ID/bx-test-project:ci-$_NODE_ENV-$SHORT_SHA
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=asia-east1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=loadbalancedcluster'

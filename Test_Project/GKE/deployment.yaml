@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-first-deployment
+  labels:
+    k8s-app: glbc
+    kubernetes.io/name: "GLBC"
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8s-net-pod
+  template:
+    metadata:
+      labels:
+        app: k8s-net-pod
+    spec:
+      containers:
+      - name: web
+        image: gcr.io/stable-reactor-326809/bx-test-project:ci-PROD-e2237fa
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /host
+            port: 80
+          periodSeconds: 5
+          timeoutSeconds: 60 
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /host
+            port: 80
+          periodSeconds: 5
+          timeoutSeconds: 60
+          successThreshold: 1
+          failureThreshold: 3          

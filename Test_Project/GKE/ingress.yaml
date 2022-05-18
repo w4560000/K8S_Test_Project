@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-first-ingress
+spec:
+  defaultBackend:
+    service:
+      name: my-first-node-port-service
+      port:
+        number: 80
+  rules:
+  - host: "k8singress.bingxiang1027test.com"
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: my-first-node-port-service
+            port:
+              number: 80
